@@ -1,3 +1,4 @@
+// main.go
 package main
 
 import (
@@ -12,11 +13,13 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/japhy-tech/backend-test/database_actions"
 	"github.com/japhy-tech/backend-test/internal"
+	"github.com/japhy-tech/backend-test/internal/handlers"
 )
 
 const (
 	MysqlDSN = "root:root@(mysql-test:3306)/core?parseTime=true"
 	ApiPort  = "5000"
+	CSVFilePath = "./breeds.csv"
 )
 
 func main() {
@@ -56,6 +59,17 @@ func main() {
 	}
 
 	logger.Info("Database connected")
+
+	// Call the CSV loading function
+	err = database_actions.InsertBreedsFromCSV(MysqlDSN, CSVFilePath)
+	if err != nil {
+		logger.Error("Failed to insert CSV data: ", err)
+	} else {
+		logger.Info("CSV data successfully inserted")
+	}
+
+	// Initialize handlers with the database connection
+	handlers.InitHandlers(db)
 
 	app := internal.NewApp(logger)
 

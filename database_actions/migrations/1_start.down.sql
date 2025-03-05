@@ -1,1 +1,1 @@
-show tables;
+DROP TABLE IF EXISTS breeds;
